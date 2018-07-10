@@ -1,14 +1,33 @@
 #!/bin/bash -eux
 
 # JDK and JRE are required for Jenkins
-apt-get install -y openjdk-7-jre openjdk-7-jdk unzip dos2unix
+apt-get update
+
+# make add-apt-repository available
+apt-get install -y software-properties-common python-software-properties
+
+## add java 8 repo
+add-apt-repository -y ppa:webupd8team/java
+apt-get update
+
+# setting to automatically accept the licence to prevent the prompt
+echo debconf shared/accepted-oracle-license-v1-1 select true | \
+debconf-set-selections
+echo debconf shared/accepted-oracle-license-v1-1 seen true | \
+debconf-set-selections
+
+# install java 8 and set defaults
+apt-get install -y oracle-java8-installer
+apt-get install -y oracle-java8-set-default
+apt-get install -y unzip dos2unix
+
 
 wget -q -O - https://jenkins-ci.org/debian/jenkins-ci.org.key | apt-key add -
 echo deb http://pkg.jenkins-ci.org/debian binary/ > /etc/apt/sources.list.d/jenkins.list
 
 apt-get update
 apt-get install -y jenkins
-apt-get upgrade
+apt-get -y upgrade
 
 # copy premade configuration files
 # jenkins default config, to set --prefix=jenkins
